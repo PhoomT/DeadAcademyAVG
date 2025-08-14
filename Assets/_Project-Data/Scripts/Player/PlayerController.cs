@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer;
     public Rigidbody rigidbody;
     public SpriteRenderer spriteRenderer;
+    public Animator animator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,8 +40,21 @@ public class PlayerController : MonoBehaviour
         // Use the Rigidbody to move the player
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
-        
-        Vector3 moveDir = new Vector3(x, 0, y);
+
+        if (x != 0) // Play sprite animations during movement
+        {
+            animator.SetBool("Move", true);
+        }
+        else if (y != 0)
+        {
+            animator.SetBool("Move", true);
+        }
+        else
+        {
+            animator.SetBool("Move", false);
+        }
+
+            Vector3 moveDir = new Vector3(x, 0, y);
         rigidbody.linearVelocity = moveDir * speed;
 
         // Flip the sprite in the sprite renderer depending on which way the player is moving.
@@ -51,7 +66,23 @@ public class PlayerController : MonoBehaviour
         {
             spriteRenderer.flipX = false;
         }
+
+        // Play attack animation on left click
+        if (Input.GetMouseButtonDown(0))
+        {
+            animator.SetBool("Attack", true);
+        }
         
-        
+    }
+
+    /* public void Attack()
+    {
+        Collider[] enemy = Physics.OverlapCircleAll();
+    }
+    */ 
+
+    public void endAttack()
+    {
+        animator.SetBool("Attack", false);
     }
 }

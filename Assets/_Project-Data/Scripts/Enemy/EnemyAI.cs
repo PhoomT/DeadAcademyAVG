@@ -9,8 +9,10 @@ public class EnemyAI : MonoBehaviour
     public NavMeshAgent navMeshAgent;
     public Transform player;
     public LayerMask Ground, Player;
+    public float groundDistance;
     public SpriteRenderer spriteRenderer;
     public Animator animator;
+    Vector3 previousPos;
 
     public int enemyHealth;
     public PlayerHealth playerHealth;
@@ -37,10 +39,26 @@ public class EnemyAI : MonoBehaviour
     {
         player = GameObject.Find("Player").transform;
         navMeshAgent = GetComponent<NavMeshAgent>();
+
+        previousPos = transform.position;
     }
 
     private void Update()
     {
+        // Lift the sprite from the ground by shooting a raycast from the ground layer (just like the player controller)
+        RaycastHit hit;
+        Vector3 castPos = transform.position;
+        castPos.y += 1;
+        if (Physics.Raycast(castPos, -transform.up, out hit, Mathf.Infinity, Ground))
+        {
+            if (hit.collider != null) // If the collider DOES hit...
+            {
+                Vector3 movePos = transform.position;
+                movePos.y = hit.point.y + groundDistance;
+                transform.position = movePos;
+            }
+        }
+
         // Check if the Player is in sight and/or attack range
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, Player);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, Player);
@@ -48,10 +66,13 @@ public class EnemyAI : MonoBehaviour
         if (!playerInSightRange && !playerInAttackRange) Patrolling(); // If the player is NOT in sight range AND attack range, then patrol.
         if (playerInSightRange && !playerInAttackRange) ChasePlayer(); // If the player IS in sight range BUT NOT in attack range, then chase the player.
         if (playerInAttackRange  && playerInSightRange) AttackPlayer(); // If the player IS in sight range AND in attack range, then attack the player.
+
+        FlipSprite();
     }
 
     public void Patrolling()
     {
+        animator.SetBool("chase", false);
         if (!walkPointSet) SearchWalkPoint(); // If there is no walk point set for the enemy, then search for one.
 
         if (walkPointSet)
@@ -93,9 +114,8 @@ public class EnemyAI : MonoBehaviour
 
     public void AttackPlayer()
     {
-        // Stop the enemy moving while attacking
-        navMeshAgent.SetDestination(transform.position);
-
+        navMeshAgent.SetDestination(transform.position); // Stop the enemy from moving while attacking
+        animator.SetBool("attack", true);
 
         if (!alreadyAttacked)
         {
@@ -107,11 +127,13 @@ public class EnemyAI : MonoBehaviour
     public void ResetAttack()
     {
         alreadyAttacked = false;
+        animator.SetBool("attack", false);
     }
 
     public void TakeDamage(int damage)
     {
         enemyHealth -= damage;
+
         if (enemyHealth <= 0)
         {
             DestroyEnemy();
@@ -138,12 +160,16 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    /* public void FlipSprite()
+    public void FlipSprite()
     {
-        if (transform.rotation) >= 90f)
+        if(transform.position.x > previousPos.x)
         {
-            spriterenderer.
+            spriteRenderer.flipX = true;
         }
-
-    } */
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
+        previousPos = transform.position;
+    }
 }

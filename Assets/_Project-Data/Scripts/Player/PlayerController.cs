@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -70,16 +71,31 @@ public class PlayerController : MonoBehaviour
         // Play attack animation on left click
         if (Input.GetMouseButtonDown(0))
         {
+            Attack();
             animator.SetBool("Attack", true);
         }
         
     }
 
-    /* public void Attack()
+    public void Attack()
     {
-        Collider[] enemy = Physics.OverlapCircleAll();
-    }
-    */ 
+        GameObject[] e = GameObject.FindGameObjectsWithTag("Enemy"); // Get all enemies that currently exist
+        {
+            foreach (GameObject go in e) // Loop through all of them
+            {
+                EnemyAI enemyAI = go.GetComponent<EnemyAI>(); // Get their script
+                if (enemyAI.inPlayerRange) // Check if enemy is in range
+                {
+                    enemyAI.TakeDamage(20); // Deal damage
+                    Debug.Log("Attack");
+                }
+                else
+                {
+                    Debug.Log("Not in range");
+                }
+            }
+        }
+    } 
 
     public void endAttack()
     {

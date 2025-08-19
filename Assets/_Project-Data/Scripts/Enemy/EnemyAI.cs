@@ -12,10 +12,15 @@ public class EnemyAI : MonoBehaviour
     public float groundDistance;
     public SpriteRenderer spriteRenderer;
     public Animator animator;
+    public GameObject enemyAttackHitbox;
+
     Vector3 previousPos;
 
     public int enemyHealth;
     public PlayerHealth playerHealth;
+    public PlayerDamage playerDamage;
+
+    public bool inPlayerRange;
 
     // List of audio clips for VO
     public List <AudioClip> patrolAudioClipList;
@@ -69,6 +74,18 @@ public class EnemyAI : MonoBehaviour
 
         FlipSprite();
     }
+    public void FlipSprite()
+    {
+        if (transform.position.x > previousPos.x)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
+        previousPos = transform.position;
+    }
 
     public void Patrolling()
     {
@@ -101,7 +118,6 @@ public class EnemyAI : MonoBehaviour
         {
             walkPointSet = true;
         }
-
     }
 
     public void ChasePlayer()
@@ -124,6 +140,16 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    public void SpawnAttackHitbox()
+    {
+        enemyAttackHitbox.SetActive(true);
+    }
+
+    public void DespawnAttaackHitbox()
+    {
+        enemyAttackHitbox.SetActive(false);
+    }
+
     public void ResetAttack()
     {
         alreadyAttacked = false;
@@ -137,6 +163,21 @@ public class EnemyAI : MonoBehaviour
         if (enemyHealth <= 0)
         {
             DestroyEnemy();
+        }
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            inPlayerRange = true;
+        }
+    }
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            inPlayerRange = false;
         }
     }
 
@@ -158,18 +199,5 @@ public class EnemyAI : MonoBehaviour
     void playAttackAudio()
     {
 
-    }
-
-    public void FlipSprite()
-    {
-        if(transform.position.x > previousPos.x)
-        {
-            spriteRenderer.flipX = true;
-        }
-        else
-        {
-            spriteRenderer.flipX = false;
-        }
-        previousPos = transform.position;
     }
 }

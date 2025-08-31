@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
                 EnemyAI enemyAI = go.GetComponent<EnemyAI>(); // Get their script
                 if (enemyAI.inPlayerRange) // Check if enemy is in range
                 {
-                    enemyAI.TakeDamage(20); // Deal damage
+                    enemyAI.TakeDamage(10); // Deal damage
                     Debug.Log("Attack");
                 }
                 else

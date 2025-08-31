@@ -20,12 +20,9 @@ public class EnemyAI : MonoBehaviour
     public PlayerHealth playerHealth;
     public PlayerDamage playerDamage;
 
-    public bool inPlayerRange;
+    // Audio System script here
 
-    // List of audio clips for VO
-    public List <AudioClip> patrolAudioClipList;
-    public List <AudioClip> chaseAudioClipList;
-    public List <AudioClip> attackAudioClipList;
+    public bool inPlayerRange;
 
     // Patrolling
     public Vector3 walkPoint;
